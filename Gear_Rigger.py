@@ -17,18 +17,31 @@ def gearRig(*args):
     (*args) -> None
     
     gets values from ui fields, writes appropriate expression, 
-    assigns expression to driver gear    
+    assigns expression to driven gear    
     '''
     obs = cmds.ls(sl=True) # Get the selected gears
     if(len(obs) > 1): # Make sure at least two gears have been selected
         ratio = cmds.floatField('fltFld', q=True, v=True) # Get ratio between the two gears
         drivenAxis = cmds.optionMenu('drivenAx', q=True, v=True) # Get axis selection for driven gear
         driverAxis = cmds.optionMenu('driverAx', q=True, v=True) # Get axis selection for driver gear
+        if(drivenAxis != driverAxis):
+            cmds.select(obs[-1])
+            origin = cmds.xform(sp=True, q=True, ws=True)# Get position of driver gear
+            getIndex = {'x': 0, 'y': 1, 'z': 2}
+            d1 = getIndex[driverAxis.lower()]
+            d2 = getIndex[drivenAxis.lower()]
         # set up expression
         for i in range(len(obs) - 1): # -1 to exclude driver gear
-            gearExp = "{}.rotate{} = ({}.rotate{} * -{});".format(obs[i], drivenAxis, obs[-1], driverAxis, ratio)
             cmds.select(obs[i])
-            cmds.makeIdentity(apply=True, t=1, r=1, s=1, n=0)
+            cmds.makeIdentity(apply=True, t=1, r=1, s=1, n=0) # Freeze transforms
+            r = -ratio
+            if(drivenAxis != driverAxis): 
+                position = cmds.xform(sp=True, q=True, ws=True) # Get position of driven gear
+                dist1 = position[d1] - origin[d1] 
+                dist2 = position[d2] - origin[d2] # Find position of driven relative to driver
+                if(dist1 * dist2 >= 0): # Check if the distances are the same polarity
+                    r = ratio # Driven gears with same polarity dimensions spin same direction as the driver gear
+            gearExp = "{}.rotate{} = ({}.rotate{} * {});".format(obs[i], drivenAxis, obs[-1], driverAxis, r)
             cmds.expression(s=gearExp, o=obs[i]) # apply expression to driven gear
     else:
         cmds.warning("Must select at least two gears")
