@@ -2,7 +2,7 @@
 Gear Rigger
 Author: Brandon Bower
 
-Instructions: Select driven gear, shift select driver gear, launch code 
+Instructions: Select driven gear(s), then shift select driver gear last, launch code 
 
 Note: if you already know the ratio, it can be directly inputted 
 as opposed to calculated through tooth numbers.
@@ -20,12 +20,18 @@ def gearRig(*args):
     assigns expression to driver gear    
     '''
     obs = cmds.ls(sl=True) # Get the selected gears
-    ratio = cmds.floatField('fltFld', q=True, v=True) # Get ratio between the two gears
-    driverAxis = cmds.optionMenu('driverAx', q=True, v=True) # Get axis selection for driver gear
-    drivenAxis = cmds.optionMenu('drivenAx', q=True, v=True) # Get axis selection for driven gear 
-    # set up expression
-    gearExp = "{}.rotate{} = ({}.rotate{} * -{});".format(obs[0], driverAxis, obs[1], drivenAxis, ratio)
-    cmds.expression(s=gearExp, o=obs[0]) # apply expression to driver gear
+    if(len(obs) > 1): # Make sure at least two gears have been selected
+        ratio = cmds.floatField('fltFld', q=True, v=True) # Get ratio between the two gears
+        drivenAxis = cmds.optionMenu('drivenAx', q=True, v=True) # Get axis selection for driven gear
+        driverAxis = cmds.optionMenu('driverAx', q=True, v=True) # Get axis selection for driver gear
+        # set up expression
+        for i in range(len(obs) - 1): # -1 to exclude driver gear
+            gearExp = "{}.rotate{} = ({}.rotate{} * -{});".format(obs[i], drivenAxis, obs[-1], driverAxis, ratio)
+            cmds.select(obs[i])
+            cmds.makeIdentity(apply=True, t=1, r=1, s=1, n=0)
+            cmds.expression(s=gearExp, o=obs[i]) # apply expression to driven gear
+    else:
+        cmds.warning("Must select at least two gears")
     # cmds.deleteUI('grWin') # delete the '#' at the start if window deletion is desired
 
 def calcRatio(*args):
@@ -57,9 +63,9 @@ def windowCall():
     cmds.window('grWin', s=False, t='Gear Rig')    
     cmds.columnLayout()
     # Driven gear ui items
-    cmds.text('Teeth of driven gear:')
+    cmds.text('Teeth of driven gear(s):')
     cmds.intField('intFld1', w=WIDTH, v=1, cc=calcRatio) # Teeth count, driven
-    cmds.optionMenu('driverAx') # Axis select, driven
+    cmds.optionMenu('drivenAx', label='Rotation Axis') # Axis select, driven
     cmds.menuItem(l='X')
     cmds.menuItem(l='Y')
     cmds.menuItem(l='Z')
@@ -67,7 +73,7 @@ def windowCall():
     # Driver gear ui items
     cmds.text('Teeth of driver gear:')
     cmds.intField('intFld2', w=WIDTH, v=1, cc=calcRatio) # Teeth count, driver
-    cmds.optionMenu('drivenAx') # Axis select, driver
+    cmds.optionMenu('driverAx', label='Rotation Axis') # Axis select, driver
     cmds.menuItem(l='X')
     cmds.menuItem(l='Y')
     cmds.menuItem(l='Z')
