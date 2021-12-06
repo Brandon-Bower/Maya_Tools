@@ -92,7 +92,7 @@ def windowCall():
     cmds.menuItem(l='Z')
     cmds.text(' ')
     # Ratio ui items
-    cmds.text('Gear rotation value (Driver Teeth / Driven Teeth):')
+    cmds.text('Rotation ratio (Driver Teeth / Driven Teeth):')
     cmds.floatField('fltFld', w=WIDTH, v=1.0, ann='Number of driven gear rotations per one driver rotation')
     # button to call gearRig function
     cmds.button(l='Rig', w=WIDTH, c=gearRig)
