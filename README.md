@@ -5,4 +5,4 @@ Different tools for making specific tasks easier in Maya
 Tool for rigging 2D textures, so that they can be animated with frame offset
 
 # Gear Rigger
-Tool to rig gears so that one gear can drive another
+Tool to rig gears so that one gear can drive another, assuming all gears are rotating about a world space axis
