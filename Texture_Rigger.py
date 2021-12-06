@@ -54,6 +54,8 @@ def rigHandler(*args):
     index = 0
     for i in range(0,len(uiList),3): # iterate over list, step by 3 for the 3 info elements of each texture         
         path = cmds.button(uiList[i], q=True, l=True)
+        if(path == "Select first image in sequence"):
+            continue # Skip paths that were not specified
         names = cmds.textField(uiList[i+1], q=True, tx=True)
         enum = cmds.checkBox(uiList[i+2], q=True, v=True)
         
@@ -70,7 +72,7 @@ def rigHandler(*args):
         path = '/'.join(pathList) + '/' # join path back, to get path to folder
         namesList = names.split(',') # get names for attribute name as well as enum, if relevant
         attrName = namesList[0].strip()
-        if attrName == '': 
+        if (attrName == '' or attrName == "Name Attribute"): 
             attrName = 'attr' + str(index + 1) # auto-name for if user didn't input any names
         number = re.findall('[\d]+', texName) # find sequence number
         items = texName.split(number[-1]) # get texture name and file type
@@ -82,10 +84,10 @@ def rigHandler(*args):
             nLength = len(namesList)
             for j in range(fLength):
                 # for loop to set up enum names
-                if (j + 1 < nLength):
+                if (j + 1 < nLength and namesList[1] != " separate with comma for Enum"):
                     enumNames += namesList[j + 1].strip() + ':' # user defined names
                 else:
-                    enumNames += str(j + 1) + ':' # in case user didn't define enouh names
+                    enumNames += str(j + 1) + ':' # in case user didn't define enough names
             enumNames = enumNames[:-1] # strip off end ':'    
             cmds.addAttr(selectList[1], ln=attrName, at='enum', en=enumNames)
             cmds.setAttr(selectList[1] + '.' + attrName, e=True, keyable=True) # create attribute, make it keyable
@@ -120,9 +122,9 @@ def findPath(*args):
        '''
        multipleFilters = "Compatible files (*.jpg *.jpeg *.png);;jpeg (*.jpeg *.jpg);;png (*.png);;All Files (*.*)"
        fPath = cmds.fileDialog2(cap='First image in sequence', fm=1, ff=multipleFilters, ds=2)
-       cmds.button(args[0], e=True ,l=fPath[0])
-       cmds.button('Rig', e=True, en=True)
-       print(fPath[0])
+       if(fPath is not None):
+           cmds.button(args[0], e=True ,l=fPath[0])
+           cmds.button('Rig', e=True, en=True)
        return 
 
 
@@ -141,7 +143,7 @@ def makeButtons(n):
         cmds.textField(w=WIDTH,\
         ann="If using Enum, separate names with a comma. \n First name written will be used as name of the attribute.",\
         tx="Name Attribute, separate with comma for Enum")
-        cmds.checkBox(l='Enum?')
+        cmds.checkBox(l='Enum')
         makeButtons(n - 1)
         return
 
@@ -164,6 +166,7 @@ def changeHandler(n):
         cmds.window('Rig_Texture_2D', e=True, w=WIDTH+4, h=n*68 + 60)
     else:
         cmds.scrollLayout('sub_fields', w=WIDTH+18, h=240)
+    cmds.button('Rig', en=False, edit=True) # Disable rig button
     makeButtons(n)
     return
     
