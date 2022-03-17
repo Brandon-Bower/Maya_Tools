@@ -45,7 +45,7 @@ def renderModels(*args):
             # Only open fbx files
             if name.endswith('.fbx'):
                 openRenderDelete(dirpath, name)
-    cmds.deleteUI('Snapshot_Render')             
+    cmds.deleteUI('Thumbnail_Render')             
     return
 
 
@@ -73,23 +73,24 @@ def windowCall():
     Creates user interface window
     '''
     # Check that window doesn't already exist
-    if cmds.window('Snapshot_Render', ex=True):
-        cmds.deleteUI('Snapshot_Render') 
-    cmds.window('Snapshot_Render')
+    if cmds.window('Thumbnail_Render', ex=True):
+        cmds.deleteUI('Thumbnail_Render') 
+    cmds.window('Thumbnail_Render')
     cmds.columnLayout("SnapRender_layout")
     # Button for selecting root folder
     pathButton = cmds.button("pButton", l='Select root folder of objects to be rendered', w=WIDTH)
     cmds.button(pathButton, e=True, c=findPath)
     # Button for starting script
     cmds.button('Go', en=False, w=250, c=renderModels)
-    cmds.window('Snapshot_Render', e=True, h=20, w=WIDTH) 
-    cmds.showWindow('Snapshot_Render')
+    cmds.window('Thumbnail_Render', e=True, h=20, w=WIDTH) 
+    cmds.showWindow('Thumbnail_Render')
     return
 
 def main():
     '''function driver for program'''
     windowCall()
     return
-    
+
+# Dont run if imported by another file
 if __name__ == "__main__":
     main()
