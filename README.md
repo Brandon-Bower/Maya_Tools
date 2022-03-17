@@ -6,3 +6,6 @@ Tool for rigging 2D textures, so that they can be animated with frame offset
 
 # Gear Rigger
 Tool to rig gears so that one gear can drive another, assuming all gears are rotating about a world space axis
+
+# Thumbnail Render
+Tool to open and render images of all fbx files within a root folder 
