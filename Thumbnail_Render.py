@@ -1,3 +1,11 @@
+"""
+Tumbnail Render
+Author: Brandon Bower
+
+Renders images of all fbx files within a root folder.
+Saves the images within the same folder as the fbx file rendered
+"""
+
 import maya.cmds as cmds
 import os
 
