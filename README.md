@@ -1,5 +1,6 @@
 # Maya_Tools
-Different tools for making specific tasks easier in Maya
+Different tools for making specific tasks easier in Maya 
+(Note: these have not been tested recently and may be out of date)
 
 # 2D Texture Rigger
 Tool for rigging 2D textures, so that they can be animated with frame offset
